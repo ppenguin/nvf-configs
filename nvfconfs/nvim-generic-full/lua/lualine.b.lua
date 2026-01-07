@@ -1,5 +1,4 @@
-
--- mostly default 
+-- mostly default
 -- https://notashelf.github.io/nvf/options.html#opt-vim.statusline.lualine.activeSection.b
 -- but we want full path (path=1)
 {

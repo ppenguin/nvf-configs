@@ -5,7 +5,8 @@
 }: let
   # inherit (inputs.nixpkgs)
   inherit (lib.nvim.binds) mkKeymap;
-  mkKeymapD = mode: key: cmd: desc: mkKeymap mode key cmd {inherit desc;};
+  mkKeymapD = mode: key: cmd: desc:
+    mkKeymap mode key cmd {inherit desc;};
 in {
   config.vim = {
     extraPackages = with pkgs; [
@@ -28,14 +29,14 @@ in {
         mkKeymapD "n" "<leader>mpo" "<CMD>!md2pdf --open %<CR>"
         "make pdf with pandocomatic and open in PDF viewer"
       )
-      (
-        mkKeymapD "n" "<leader>mpu" "<CMD>!md2pdf %<CR>"
-        "make (update) pdf with pandocomatic"
-      )
+      (mkKeymapD "n" "<leader>mpu" "<CMD>!md2pdf %<CR>" "make (update) pdf with pandocomatic")
       # reload config
       (mkKeymapD "n" "<leader>rc" "<CMD>source $MYVIMRC<CR>" "reload config")
       # copy active buffer path to system clipboard
-      (mkKeymapD "n" "<leader>bcp" ''<CMD>let @+=expand("%")<CR>'' "copy active buffer path to system clipboard")
+      (
+        mkKeymapD "n" "<leader>bcp" ''<CMD>let @+=expand("%")<CR>''
+        "copy active buffer path to system clipboard"
+      )
       # handy
       (mkKeymapD ["n" "v"] "<leader>x" ''"_x'' "delete (cut without copy)")
       (mkKeymapD ["n" "v"] "<leader>d" ''"_d'' "delete <motion>/selection without copy")
