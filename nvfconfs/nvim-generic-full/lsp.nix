@@ -32,63 +32,32 @@ in {
 
     languages = {
       enableFormat = true;
-      bash =
-        enableLspOptsDefault
-        // {
-          extraDiagnostics.enable = true;
-        };
+      bash = enableLspOptsDefault // {extraDiagnostics.enable = true;};
       css = enableLspOptsDefault;
       go = enableLspOptsDefault; # TODO: add dap config
-      hcl =
-        enableLspOptsDefault
-        // {
-          lsp.servers = ["tofuls"];
-        };
+      hcl = enableLspOptsDefault // {lsp.servers = ["tofuls-hcl"];};
       html = enableLspOptsDefault;
       json = enableLspOptsDefault;
-      lua =
-        enableLspOptsDefault
-        // {
-          extraDiagnostics.enable = true;
-        };
-      markdown =
-        enableLspOptsDefault
-        // {
-          extraDiagnostics.enable = true;
-        };
+      lua = enableLspOptsDefault // {extraDiagnostics.enable = true;};
+      markdown = enableLspOptsDefault // {extraDiagnostics.enable = true;};
       nix =
         enableLspOptsDefault
         // {
           extraDiagnostics.enable = true;
-          format.type = [
-            "alejandra"
-            "nixfmt"
-          ];
+          format.type = ["alejandra" "nixfmt"];
         };
       python = enableLspOptsDefault;
-      sql =
-        enableLspOptsDefault
-        // {
-          extraDiagnostics.enable = true;
-        };
-      svelte =
-        enableLspOptsDefault
-        // {
-          extraDiagnostics.enable = true;
-        };
+      sql = enableLspOptsDefault // {extraDiagnostics.enable = true;};
+      svelte = enableLspOptsDefault // {extraDiagnostics.enable = true;};
       terraform = {
         enable = true;
         lsp = {
           enable = true;
-          servers = ["tofuls"];
+          servers = ["tofuls-tf"];
         };
         treesitter.enable = true;
       };
-      ts =
-        enableLspOptsDefault
-        // {
-          extraDiagnostics.enable = true;
-        };
+      ts = enableLspOptsDefault // {extraDiagnostics.enable = true;};
       yaml = {
         enable = true;
         lsp.enable = true;
@@ -117,7 +86,7 @@ in {
         -- })
 
       ''
-      + (builtins.readFile ./lua/switch-nixfmt.lua)
+      + (builtins.readFile ./lua/switch-nix-fmt-conform.lua)
     );
 
     # needed for nixfmt switch script
