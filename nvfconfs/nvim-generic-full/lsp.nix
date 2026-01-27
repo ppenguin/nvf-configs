@@ -44,7 +44,7 @@ in {
         enableLspOptsDefault
         // {
           extraDiagnostics.enable = true;
-          format.type = ["alejandra" "nixfmt"];
+          format.type = ["alejandra"]; # note: removed nixfmt because it is always chosen by default
         };
       python = enableLspOptsDefault;
       sql = enableLspOptsDefault // {extraDiagnostics.enable = true;};
@@ -76,14 +76,14 @@ in {
           return orig_util_open_floating_preview(contents, syntax, opts, ...)
         end
 
-        -- vim.api.nvim_create_autocmd("FileType", {
-        --   pattern = "nix",
-        --   callback = function()
-        --     vim.bo.shiftwidth = 2
-        --     vim.bo.softtabstop = 2
-        --     vim.bo.expandtab = true
-        --   end,
-        -- })
+        vim.api.nvim_create_autocmd("FileType", {
+          pattern = "sh",
+          callback = function()
+            vim.bo.shiftwidth = 4
+            vim.bo.softtabstop = 4
+            vim.bo.expandtab = true
+          end,
+        })
 
       ''
       + (builtins.readFile ./lua/switch-nix-fmt-conform.lua)

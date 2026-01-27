@@ -35,6 +35,7 @@ in {
         "barbar-nvim"
         "nvim-spectre"
         "nvim-jqx"
+        "nvim-dbee" # TODO: keybinds
       ]
     );
   };

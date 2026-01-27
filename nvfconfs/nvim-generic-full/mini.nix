@@ -18,6 +18,7 @@ in {
       pairs.enable = true;
       splitjoin.enable = true;
       surround.enable = true;
+      # tabline.enable = true;
     };
     keymaps = [
       (mkKeymapD "n" "<leader>imt" "<CMD>lua MiniMap.toggle()<CR>" "mini-map toggle")
