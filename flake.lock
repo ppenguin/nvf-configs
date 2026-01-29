@@ -57,11 +57,11 @@
     },
     "mnw": {
       "locked": {
-        "lastModified": 1767030222,
+        "lastModified": 1768701608,
         "narHash": "sha256-kSvWF3Xt2HW9hmV5V7i8PqeWJIBUKmuKoHhOgj3Znzs=",
         "owner": "Gerg-L",
         "repo": "mnw",
-        "rev": "75bb637454b0fbbb5ed652375a4bf7ffd28bcf6f",
+        "rev": "20d63a8a1ae400557c770052a46a9840e768926b",
         "type": "github"
       },
       "original": {
@@ -133,15 +133,16 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1768464392,
-        "narHash": "sha256-H3DRARqclUFdUaWgu1xQEb86/wrh41ZG0fIQJVjcZdE=",
-        "owner": "notashelf",
+        "lastModified": 1769253589,
+        "narHash": "sha256-NdEhTe5F9vG76BI0UuyOLhTHY9nwb814kJE20MP6pbw=",
+        "owner": "ppenguin",
         "repo": "nvf",
-        "rev": "007f14a2c8d67568f4655654b401871920d73011",
+        "rev": "63d59ff40a29c909173ec0beb3c03e3c1d72cc86",
         "type": "github"
       },
       "original": {
-        "owner": "notashelf",
+        "owner": "ppenguin",
+        "ref": "improve-terraformls",
         "repo": "nvf",
         "type": "github"
       }

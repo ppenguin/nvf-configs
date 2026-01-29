@@ -15,6 +15,7 @@
         enable = true;
         setupOpts = {notification.override_vim_notify = true;};
       };
+      indent-blankline.enable = true; # will this fix the crappy behaviour for nix files and o
     };
 
     dashboard = {

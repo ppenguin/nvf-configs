@@ -28,7 +28,26 @@ in {
       lspkind.enable = true;
     };
 
-    formatter.conform-nvim.enable = true;
+    formatter.conform-nvim = {
+      enable = true;
+      # Configure prettier for markdown with custom args
+      setupOpts = {
+        formatters_by_ft = {
+          markdown = ["prettier"];
+        };
+
+        formatters = {
+          prettier = {
+            prepend_args = [
+              "--prose-wrap"
+              "preserve"
+              "--print-width"
+              "999" # Prevents wrapping tables
+            ];
+          };
+        };
+      };
+    };
 
     languages = {
       enableFormat = true;
@@ -81,6 +100,14 @@ in {
           callback = function()
             vim.bo.shiftwidth = 4
             vim.bo.softtabstop = 4
+            vim.bo.expandtab = false
+          end,
+        })
+        vim.api.nvim_create_autocmd("FileType", {
+          pattern = "nix",
+          callback = function()
+            vim.bo.shiftwidth = 2
+            vim.bo.softtabstop = 2
             vim.bo.expandtab = true
           end,
         })
