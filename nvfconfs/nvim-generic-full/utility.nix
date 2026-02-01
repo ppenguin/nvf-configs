@@ -4,11 +4,11 @@
 
     preview.markdownPreview = {
       enable = true;
-      autoStart = true; # TODO: the plugin isn't even loaded without this, but we could probably to a keybind with `require`?
+      autoStart = false; # TODO: the plugin isn't even loaded without this, but we could probably to a keybind with `require`?
       broadcastServer = true; # probably nice to connect when doing remote edit
       # customIP = "0.0.0.0";
       # customPort = "15888";
-      # lazyRefresh = true;
+      lazyRefresh = true;
     };
 
     multicursors.enable = true;
