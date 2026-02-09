@@ -3,8 +3,6 @@
     extraPackages = with pkgs; [
       fzf
       ripgrep
-      imagemagick # for image preview conversions
-      mermaid-cli
     ];
 
     theme = {
@@ -66,7 +64,6 @@
       enable = true;
       gitsigns.enable = true;
       vim-fugitive.enable = true;
-      neogit.enable = true; # TODO: decide whether this stays and test it // replace lazygit?!
     };
   };
 }

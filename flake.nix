@@ -33,12 +33,17 @@
             ];
         };
         packages = {
+          default = self'.packages.nvim-generic-full;
           nvim-generic-full =
             (inputs.nvf.lib.neovimConfiguration {
               inherit pkgs;
               modules = [./nvfconfs/nvim-generic-full];
             }).neovim;
-          default = self'.packages.nvim-generic-full;
+          nvim-lean-devops =
+            (inputs.nvf.lib.neovimConfiguration {
+              inherit pkgs;
+              modules = [./nvfconfs/nvim-lean-devops];
+            }).neovim;
         };
         devShells = {
           default = pkgs.mkShell {
