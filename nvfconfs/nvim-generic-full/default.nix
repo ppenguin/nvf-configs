@@ -21,9 +21,9 @@
       imagemagick # for image preview conversions
       mermaid-cli
     ];
-  };
 
-  git = {
-    neogit.enable = true; # TODO: decide whether this stays and test it // replace lazygit?!
+    git = {
+      neogit.enable = true; # TODO: decide whether this stays and test it // replace lazygit?!
+    };
   };
 }

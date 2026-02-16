@@ -33,7 +33,6 @@ in {
       })
       [
         "barbar-nvim"
-        "nvim-jqx"
       ]
     );
   };
