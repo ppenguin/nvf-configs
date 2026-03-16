@@ -43,6 +43,7 @@ in {
       (mkKeymapD "n" "<leader>D" ''"_D'' "delete until EOL without copy")
       # (mkKeymap "n" "<leader>dd" ''"_dd'' "delete line without copy")
       (mkKeymapD "n" "<leader>:" "<CMD>Telescope commands<CR>" "Telescope commands")
+      (mkKeymapD "n" "<leader>fk" "<CMD>Telescope keymaps<CR>" "Telescope keymaps")
       # copy/paste with clipboard
       (mkKeymapD ["n" "v"] "<leader>y" ''"+y'' "Yank <motion>/selection to system clipboard")
       (mkKeymapD "n" "<leader>p" ''"+p'' "Paste-after from system clipboard")
