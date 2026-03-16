@@ -32,18 +32,25 @@
               "nomad"
             ];
         };
-        packages = {
+        packages = let
+          mkNvim = pkgs.lib.makeOverridable ({
+            modules,
+            theme ? {
+              name = "tokyonight";
+              style = "night";
+            },
+          }:
+            (inputs.nvf.lib.neovimConfiguration {
+              inherit pkgs;
+              inherit modules;
+              extraSpecialArgs = {inherit theme;};
+            }).neovim);
+        in {
           default = self'.packages.nvim-generic-full;
           nvim-generic-full =
-            (inputs.nvf.lib.neovimConfiguration {
-              inherit pkgs;
-              modules = [./nvfconfs/nvim-generic-full];
-            }).neovim;
+            mkNvim {modules = [./nvfconfs/nvim-generic-full];};
           nvim-lean-devops =
-            (inputs.nvf.lib.neovimConfiguration {
-              inherit pkgs;
-              modules = [./nvfconfs/nvim-lean-devops];
-            }).neovim;
+            mkNvim {modules = [./nvfconfs/nvim-lean-devops];};
         };
         devShells = {
           default = pkgs.mkShell {

@@ -1,4 +1,11 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  theme ? {
+    name = "tokyonight";
+    style = "night";
+  },
+  ...
+}: {
   config.vim = {
     extraPackages = with pkgs; [
       fzf
@@ -7,8 +14,7 @@
 
     theme = {
       enable = true;
-      name = "tokyonight";
-      style = "night";
+      inherit (theme) name style;
     };
 
     globals = {
