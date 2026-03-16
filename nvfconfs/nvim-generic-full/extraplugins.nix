@@ -1,4 +1,6 @@
-{pkgs, ...}: {
+{pkgs, ...}: let
+  vpkgs = pkgs.vimPlugins;
+in {
   config.vim = {
     # here we can provide custom setup
     extraPlugins =
@@ -9,7 +11,6 @@
         })
         [
           "nvim-jqx"
-          "nvim-dbee" # TODO: keybinds
         ]
       ))
       // {
@@ -24,6 +25,10 @@
               sha256 = "sha256-Pwsp9QQiADvzMjn2jSiQ/MPVCYjVnugKu55gbjvlYDk=";
             };
           };
+        };
+        nvim-dbee = {
+          package = vpkgs.nvim-dbee;
+          setup = "require('dbee').setup({})";
         };
       };
   };
