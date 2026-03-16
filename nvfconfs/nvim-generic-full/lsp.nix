@@ -1,4 +1,5 @@
 let
+  # FIXME: probably not necessary if using languages.enable...
   enableLspOptsDefault = {
     enable = true;
     format.enable = true;

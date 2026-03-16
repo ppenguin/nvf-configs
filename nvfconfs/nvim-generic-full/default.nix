@@ -10,6 +10,7 @@
     ../_common/term.nix
     ../_common/ui.nix
     ../_common/utility.nix
+    ./dap.nix
     ./extraplugins.nix
     ./lsp.nix
     ./ui.nix
