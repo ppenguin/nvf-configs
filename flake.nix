@@ -4,8 +4,7 @@
     nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1";
     flake-parts.url = "github:hercules-ci/flake-parts";
     nvf = {
-      # url = "github:notashelf/nvf"; # NOTE: don't forget to override for testing!
-      url = "github:ppenguin/nvf/improve-terraformls";
+      url = "github:notashelf/nvf"; # NOTE: don't forget to override for testing!
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
