@@ -20,7 +20,7 @@ vim.api.nvim_create_autocmd("filetype", {
 			-- Using system registers for multi-instance support.
 			vim.fn.setreg("+", absolute_file_paths)
 			print("Yanked " .. #marks .. " items")
-		end, { remap = true, buffer = true })
+		end, { remap = true, buffer = true, desc = "nvim-tree: yank marked paths to clipboard" })
 
 		-- Paste files
 		vim.keymap.set("n", "gp", function()
@@ -37,6 +37,6 @@ vim.api.nvim_create_autocmd("filetype", {
 			end
 			api.tree.reload()
 			print("Pasted " .. #source_paths .. " items")
-		end, { remap = true, buffer = true })
+		end, { remap = true, buffer = true, desc = "nvim-tree: paste filepath(s) in system clipboard as file(s) at node" })
 	end,
 })
