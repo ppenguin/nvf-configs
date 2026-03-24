@@ -1,4 +1,5 @@
 {
+  lib,
   pkgs,
   theme ? {
     name = "tokyonight";
@@ -25,7 +26,19 @@
     options = {
       cursorcolumn = true;
       visualbell = true;
+      wildmode = "full";
+      wildmenu = true;
     };
+
+    # "fix" selection behaviour of commandline suggestions
+    luaConfigRC.optionsScript = ''
+      vim.keymap.set('c', '<Space>', function()
+        if vim.fn.pumvisible() == 1 then
+          return '<C-y> '  -- confirm + space
+        end
+        return ' '
+      end, { expr = true })
+    '';
 
     lazy.enable = true;
 
@@ -38,7 +51,13 @@
 
     autocomplete = {
       nvim-cmp.enable = false;
-      blink-cmp.enable = true;
+      blink-cmp = {
+        enable = true;
+        mappings = {
+          confirm = "<S-return>";
+        };
+        sourcePlugins.emoji.enable = true;
+      };
     };
 
     autopairs.nvim-autopairs.enable = true;
