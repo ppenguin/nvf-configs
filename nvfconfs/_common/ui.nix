@@ -40,35 +40,18 @@
     ui = {
       colorizer = {
         enable = true;
-        setupOpts.filetypes = {
-          d2 = {
-            RRGGBB = true;
+        setupOpts = {
+        filetypes."*" = {};
+        user_default_options = {
             names = true;
-          };
-          html = {
             RRGGBB = true;
             RRGGBBAA = true;
-          };
-          markdown = {
-            RRGGBB = true;
-            RRGGBBAA = true;
-          };
-          css = {
             css = true;
             css_fn = true;
-          };
-          sass = {
-            css = true;
-            css_fn = true;
-            sass = true;
-          };
-          javascript = {
-            RRGGBB = true;
-            RRGGBBAA = true;
-          };
-          go = {
-            RRGGBB = true;
-          };
+            hsl_fn = true;
+            rgb_fn = true;
+            # sass = true;
+        };
         };
       };
 
