@@ -40,7 +40,7 @@ in {
       enableFormat = true;
       css = enableLspOptsDefault;
       go = enableLspOptsDefault; # TODO: add dap config
-      hcl = enableLspOptsDefault // {lsp.servers = ["tofuls-hcl"];};
+      hcl = enableLspOptsDefault // {lsp.servers = ["tofu-ls"];};
       html = enableLspOptsDefault;
       python = enableLspOptsDefault;
       svelte = enableLspOptsDefault // {extraDiagnostics.enable = true;};
@@ -48,7 +48,7 @@ in {
         enable = true;
         lsp = {
           enable = true;
-          servers = ["tofuls-tf"];
+          servers = ["tofu-ls"];
         };
         treesitter.enable = true;
       };
