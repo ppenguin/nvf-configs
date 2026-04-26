@@ -30,6 +30,9 @@
               "terraform"
               "nomad"
             ];
+          overlays = [
+            (import ./overlays/vim-plugins.nix)
+          ];
         };
         packages = let
           mkNvim = pkgs.lib.makeOverridable ({

@@ -14,6 +14,10 @@ in {
       otter-nvim = {
         enable = true;
       };
+      presets = {
+        marksman.enable = true;
+      };
+      servers.marksman.filetypes = ["markdown"];
     };
 
     formatter.conform-nvim = {
@@ -52,7 +56,7 @@ in {
         };
         treesitter.enable = true;
       };
-      ts = enableLspOptsDefault // {extraDiagnostics.enable = true;};
+      typescript = enableLspOptsDefault // {extraDiagnostics.enable = true;};
     };
   };
 }

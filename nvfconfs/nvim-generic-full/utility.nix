@@ -1,7 +1,7 @@
 {
   config.vim.utility = {
     preview.markdownPreview = {
-      enable = true;
+      enable = false; # NOTE: try selimacerbas/markdown-preview.nvim (via overlay)
       autoStart = false;
       broadcastServer = true; # probably nice to connect when doing remote edit
       # customIP = "0.0.0.0";
