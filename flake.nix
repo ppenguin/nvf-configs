@@ -29,6 +29,7 @@
             builtins.elem (inputs.nixpkgs.lib.getName pkg) [
               "terraform"
               "nomad"
+              "barbar.nvim"
             ];
           overlays = [
             (import ./overlays/vim-plugins.nix)
