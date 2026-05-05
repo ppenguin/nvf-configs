@@ -45,7 +45,8 @@
     clipboard = {
       enable = true;
       providers = {
-        wl-copy.enable = true;
+        # wl-clipboard depends on wayland, which is unavailable on Darwin
+        wl-copy.enable = pkgs.stdenv.isLinux;
       };
     };
 
