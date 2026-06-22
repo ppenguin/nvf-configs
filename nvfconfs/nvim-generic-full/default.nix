@@ -4,6 +4,7 @@
     ../_common/common.nix
     ../_common/extraplugins.nix
     ../_common/filetree.nix
+    ../_common/lib.nix
     ../_common/lsp.nix
     ../_common/mini.nix
     ../_common/sops.nix

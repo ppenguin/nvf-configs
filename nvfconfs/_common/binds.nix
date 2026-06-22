@@ -1,13 +1,8 @@
 {
-  lib,
   pkgs,
+  mkKeymapD,
   ...
-}: let
-  # inherit (inputs.nixpkgs)
-  inherit (lib.nvim.binds) mkKeymap;
-  mkKeymapD = mode: key: cmd: desc:
-    mkKeymap mode key cmd {inherit desc;};
-in {
+}: {
   config.vim = {
     extraPackages = with pkgs; [
       jq # for the handy json processing binds below

@@ -1,8 +1,8 @@
-{lib, ...}: let
-  inherit (lib.nvim.binds) mkKeymap;
-  mkKeymapD = mode: key: cmd: desc:
-    mkKeymap mode key cmd {inherit desc;};
-in {
+{
+  lib,
+  mkKeymapD,
+  ...
+}: {
   config.vim = {
     mini = {
       # clue.enable = true;

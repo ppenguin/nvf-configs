@@ -1,4 +1,4 @@
-{
+{mkKeymapD, ...}: {
   config.vim = {
     terminal.toggleterm = {
       enable = true;
@@ -9,10 +9,8 @@
       };
     };
 
-    maps.terminal."<leader>," = {
-      action = "<CMD>ToggleTermToggleAll!<CR>";
-      desc = "Close/hide toggleterm (without exiting the process)";
-      silent = true;
-    };
+    keymaps = [
+      (mkKeymapD "t" "<leader>," "<CMD>ToggleTermToggleAll!<CR>" "Close/hide toggleterm (without exiting the process)")
+    ];
   };
 }
