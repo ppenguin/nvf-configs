@@ -16,6 +16,7 @@
     theme = {
       enable = true;
       inherit (theme) name style;
+      transparent = true;
     };
 
     globals = {
