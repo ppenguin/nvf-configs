@@ -6,7 +6,9 @@
     style = "night";
   },
   ...
-}: {
+}: let
+  inherit (lib.nvim.dag) entryAnywhere;
+in {
   config.vim = {
     extraPackages = with pkgs; [
       fzf
@@ -50,6 +52,25 @@
         wl-copy.enable = pkgs.stdenv.isLinux;
       };
     };
+
+    luaConfigRC.clipboard = entryAnywhere ''
+      if vim.env.WAYLAND_DISPLAY then
+        vim.o.clipboard = "unnamedplus"
+      else
+        vim.g.clipboard = {
+          name = "OSC 52",
+          copy = {
+            ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+            ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+          },
+          paste = {
+            ["+"] = require("vim.ui.clipboard.osc52").paste("+"),
+            ["*"] = require("vim.ui.clipboard.osc52").paste("*"),
+          },
+        }
+        vim.o.clipboard = "unnamedplus"
+      end
+    '';
 
     autocomplete = {
       nvim-cmp.enable = false;
