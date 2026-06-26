@@ -11,12 +11,15 @@ in {
         })
         [
           "nvim-jqx"
-          "markdown-preview-selim" # NOTE: needs overlay
           "live-server" # NOTE: dep of markdown-preview-selim, needs overlay
           "markdown-table-mode"
         ]
       ))
       // {
+        "markdown-preview-selim" = {
+          package = vpkgs.markdown-preview-selim; # NOTE: needs overlay
+          setup = "require('markdown_preview').setup({ host = '0.0.0.0' })";
+        };
         nvim-dbee = {
           package = vpkgs.nvim-dbee;
           setup = "require('dbee').setup({})";

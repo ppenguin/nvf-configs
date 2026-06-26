@@ -13,13 +13,15 @@ final: prev: {
 
     markdown-preview-selim = final.vimUtils.buildVimPlugin {
       pname = "markdown-preview-selim";
-      version = "unstable-2025-04-26";
+      # PR: https://github.com/selimacerbas/markdown-preview.nvim/pull/28
+      version = "unstable-2026-06-26";
 
+      # original: owner = "selimacerbas"; rev = "29234edae5b8b7db5ae05061ff7197f95ef0ffd5"; hash = "sha256-WSB3oI8CbyGrSGu7HgLFKReQYKxxbc34ojGGvRWIvSQ=";
       src = final.fetchFromGitHub {
-        owner = "selimacerbas";
+        owner = "icyveins7";
         repo = "markdown-preview.nvim";
-        rev = "29234edae5b8b7db5ae05061ff7197f95ef0ffd5";
-        hash = "sha256-WSB3oI8CbyGrSGu7HgLFKReQYKxxbc34ojGGvRWIvSQ=";
+        rev = "ca14e426f82e3dc645fe7522ed303c0994056af5";
+        hash = "sha256-lSkoG3YOJo3HN5SxynHlFPbo9JBo8OihIXThExUj7pE=";
       };
 
       doCheck = false;
@@ -34,13 +36,15 @@ final: prev: {
 
     live-server = final.vimUtils.buildVimPlugin {
       pname = "live-server";
-      version = "unstable-2025-04-26";
+      # PR: https://github.com/selimacerbas/live-server.nvim/pull/5
+      version = "unstable-2026-06-26";
 
+      # original: owner = "selimacerbas"; rev = "084d69b63610803c18ddd7541294d83ca748d1dc"; hash = "sha256-ig9UQ6FdEcU6ywfXzFdT7NYWY95CZ1dPS3QFH6/qKbg=";
       src = final.fetchFromGitHub {
-        owner = "selimacerbas";
+        owner = "icyveins7";
         repo = "live-server.nvim";
-        rev = "084d69b63610803c18ddd7541294d83ca748d1dc";
-        hash = "sha256-ig9UQ6FdEcU6ywfXzFdT7NYWY95CZ1dPS3QFH6/qKbg=";
+        rev = "f4a43146b43d820247e9305a0737ee734c5adda1";
+        hash = "sha256-D/4kD/mZzT4/Lkf+AG1LXhffK6L7BeuAz03I3aMf+NY=";
       };
 
       doCheck = false;
