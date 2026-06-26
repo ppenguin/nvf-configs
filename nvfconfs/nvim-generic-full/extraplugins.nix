@@ -18,7 +18,7 @@ in {
       // {
         "markdown-preview-selim" = {
           package = vpkgs.markdown-preview-selim; # NOTE: needs overlay
-          setup = "require('markdown_preview').setup({ host = '0.0.0.0' })";
+          setup = "require('markdown_preview').setup({ host = '0.0.0.0', port = 18421 })";
         };
         nvim-dbee = {
           package = vpkgs.nvim-dbee;
