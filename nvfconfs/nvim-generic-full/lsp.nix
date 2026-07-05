@@ -1,4 +1,4 @@
-let
+{lib, ...}: let
   # FIXME: probably not necessary if using languages.enable...
   enableLspOptsDefault = {
     enable = true;
@@ -29,12 +29,12 @@ in {
 
         formatters = {
           prettier = {
-            prepend_args = [
-              "--prose-wrap"
-              "preserve"
-              "--print-width"
-              "999" # Prevents wrapping tables
-            ];
+            # prepend_args = lib.mkDefault [
+            #   "--prose-wrap"
+            #   "preserve"
+            #   "--print-width"
+            #   "999" # Prevents wrapping tables
+            # ];
           };
         };
       };
