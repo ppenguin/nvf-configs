@@ -25,7 +25,12 @@
     ];
 
     git = {
-      neogit.enable = true; # TODO: decide whether this stays and test it // replace lazygit?!
+      neogit = {
+        enable = true; # TODO: decide whether this stays and test it // replace lazygit?!
+        setupOpts = {
+          graph_style = "kitty";
+        };
+      };
     };
   };
 }

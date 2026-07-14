@@ -29,18 +29,43 @@ in {
     options = {
       cursorcolumn = true;
       visualbell = true;
-      wildmode = "full";
+      wildmode = "noselect:full";
+      wildoptions = "pum";
       wildmenu = true;
     };
 
-    # "fix" selection behaviour of commandline suggestions
+    # Accept the first visible command-line completion when Space cancels a
+    # noselect wildmenu. Command-line mappings do not fire while wildmenu owns
+    # the popup, and noselect completion does not change the cmdline on Tab,
+    # so the first observable state change is `:Mark `.
     luaConfigRC.optionsScript = ''
-      vim.keymap.set('c', '<Space>', function()
-        if vim.fn.pumvisible() == 1 then
-          return '<C-y> '  -- confirm + space
-        end
-        return ' '
-      end, { expr = true })
+      do
+        local applying_completion = false
+
+        vim.api.nvim_create_autocmd("CmdlineChanged", {
+          callback = function()
+            if applying_completion or vim.fn.getcmdtype() ~= ":" then
+              return
+            end
+
+            local cmdline = vim.fn.getcmdline()
+            local pattern = cmdline:match("^([A-Z][%w_]*) $")
+            if pattern == nil then
+              return
+            end
+
+            local matches = vim.fn.getcompletion(pattern, "cmdline")
+            if #matches == 0 then
+              return
+            end
+
+            local completed = matches[1] .. " "
+            applying_completion = true
+            vim.fn.setcmdline(completed, #completed + 1)
+            applying_completion = false
+          end,
+        })
+      end
     '';
 
     lazy.enable = true;
