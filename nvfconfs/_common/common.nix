@@ -77,8 +77,8 @@ in {
       # vim.g.clipboard is left unset. Both depend on a display server, so they
       # are Linux-only (wl-clipboard/X are unavailable on Darwin).
       providers = {
-        wl-copy.enable = pkgs.stdenv.isLinux;
-        xclip.enable = pkgs.stdenv.isLinux;
+        wl-copy.enable = pkgs.stdenv.hostPlatform.isLinux;
+        xclip.enable = pkgs.stdenv.hostPlatform.isLinux;
       };
     };
 
