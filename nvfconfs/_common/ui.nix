@@ -26,7 +26,37 @@
 
     statusline.lualine = {
       enable = true;
-      activeSection.b = [(builtins.readFile ./lua/lualine.b.lua)];
+      # 2026-09-11: nvf removed `activeSection.<x>`; the replacement is
+      # `setupOpts.sections.lualine_<x>`, and it takes a Nix list of attrsets
+      # rather than a raw Lua string (positional lualine args use the "@1" key,
+      # raw Lua would need {_type = "lua-inline"; expr = ...;}).
+      # This is nvf's own default for lualine_b with our one deviation kept:
+      # path = 1 on `filename`, so we get the full path.
+      setupOpts.sections.lualine_b = [
+        {
+          "@1" = "filetype";
+          colored = true;
+          icon_only = true;
+          icon.align = "left";
+        }
+        {
+          "@1" = "filename";
+          path = 1; # the only change from the nvf default
+          symbols = {
+            modified = " ";
+            readonly = " ";
+          };
+          separator.right = "";
+        }
+        {
+          "@1" = "";
+          draw_empty = true;
+          separator = {
+            left = "";
+            right = "";
+          };
+        }
+      ];
     };
 
     # NOTE: use mini-map from mini instead
