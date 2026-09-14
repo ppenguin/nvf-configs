@@ -26,7 +26,15 @@ in {
     };
 
     diagnostics = {
-      nvim-lint.enable = true;
+      nvim-lint = {
+        enable = true;
+        linters = {
+          golangci-lint.cmd = "go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest"; # use the current env's toolchain
+        };
+        linters_by_ft = {
+          go = ["golangci-lint"];
+        };
+      };
     };
 
     formatter.conform-nvim = {
@@ -66,7 +74,7 @@ in {
         end
 
         vim.api.nvim_create_autocmd("FileType", {
-          pattern = "sh",
+          pattern = {"sh", "go", "make"},
           callback = function()
             vim.bo.shiftwidth = 4
             vim.bo.tabstop = 4
