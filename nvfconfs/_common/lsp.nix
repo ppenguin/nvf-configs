@@ -25,6 +25,10 @@ in {
       lspkind.enable = true;
     };
 
+    diagnostics = {
+      nvim-lint.enable = true;
+    };
+
     formatter.conform-nvim = {
       enable = true;
       # Configure prettier for markdown with custom args
