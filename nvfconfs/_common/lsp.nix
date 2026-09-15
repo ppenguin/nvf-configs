@@ -29,10 +29,26 @@ in {
       nvim-lint = {
         enable = true;
         linters = {
-          golangci-lint.cmd = "go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest"; # use the current env's toolchain
+          golangcilint = {
+            cmd = "go"; # use the current env's toolchain
+            args = [
+              "run"
+              "github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest"
+              "run"
+              "--output.json.path=stdout"
+              # "--output.text.path stderr"
+              "--show-stats=false"
+              "./..."
+            ];
+            # stdin = false;
+            # append_fname = true; # executed for filetype means focused buffer
+            append_fname = false;
+            ignore_exitcode = true; # returns error on findings, so nvim has to ignore (no process error)
+            stream = "stdout";
+          };
         };
         linters_by_ft = {
-          go = ["golangci-lint"];
+          go = ["golangcilint"];
         };
       };
     };
