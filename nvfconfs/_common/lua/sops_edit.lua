@@ -59,7 +59,7 @@ end
 local function encrypt_and_save(bufnr, original_file)
 	local result = vim.system({
 		sops_binary,
-		"--encrypt",
+		"encrypt",
 		"--filename-override",
 		original_file,
 	}, {

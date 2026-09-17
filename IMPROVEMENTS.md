@@ -41,6 +41,9 @@ without reverting the profile refactor. Disposable fake-SOPS tests covered
 concurrent edited buffers, successful decrypt/save, and encryption failure; each
 buffer kept its own save hook and the failure case preserved the original
 encrypted bytes and modified buffer state. No real secret material was used.
+The save command uses SOPS's `encrypt` subcommand, whose stdin mode works with
+`--filename-override`; the legacy `--encrypt` flag requires a positional file and
+otherwise fails with `Error: no file specified`.
 
 ### nvim-tree multi-copy
 
