@@ -6,6 +6,8 @@
   inherit (lib.generators) mkLuaInline;
   inherit (lib.meta) getExe;
 
+  debugpyPython = pkgs.python3.withPackages (pythonPackages: [pythonPackages.debugpy]);
+
   bundledServer = {
     enable = true;
     format.enable = false;
@@ -69,13 +71,8 @@ in {
     };
 
     languages = {
-      # Globally useful, lightweight exceptions.
-      bash =
-        bundledServer
-        // {
-          format.enable = true;
-          extraDiagnostics.enable = true;
-        };
+      # The complete devops baseline is inherited by languages-full. GNU Make
+      # is an additional lightweight, globally useful exception.
       make = {
         enable = true;
         format.enable = true;
@@ -96,11 +93,17 @@ in {
 
       # Bundled language servers and parsers; project-sensitive formatters and
       # linters below resolve from the active environment.
-      json = bundledServer;
       lua = bundledServer;
-      nix = bundledServer;
-      sql = bundledServer;
-      yaml = bundledServer;
+      sql = {
+        format = {
+          enable = true;
+          type = ["sqlfluff"];
+        };
+        extraDiagnostics = {
+          enable = true;
+          types = ["sqlfluff"];
+        };
+      };
       css = bundledServer;
       go = bundledServer;
       hcl = bundledServer // {lsp.servers = ["tofu-ls"];};
@@ -113,27 +116,22 @@ in {
 
     formatter.conform-nvim.setupOpts = {
       formatters_by_ft = {
-        css = ["prettier"];
-        html = ["prettier"];
-        javascript = ["prettier"];
-        javascriptreact = ["prettier"];
-        json = ["prettier"];
-        jsonc = ["prettier"];
+        css = ["project_prettier"];
+        html = ["project_prettier"];
+        javascript = ["project_prettier"];
+        javascriptreact = ["project_prettier"];
         lua = ["stylua"];
         markdown = lib.mkForce ["markdown_prettier"];
-        nix = ["alejandra"];
-        sql = ["sqlfluff"];
-        svelte = ["prettier"];
-        typescript = ["prettier"];
-        typescriptreact = ["prettier"];
-        yaml = ["prettier"];
+        svelte = ["project_prettier"];
+        typescript = ["project_prettier"];
+        typescriptreact = ["project_prettier"];
       };
 
-      # Markdown's global preset installs Prettier. Code/config filetypes use a
-      # PATH-resolved override that rejects that bundled executable. Markdown
-      # uses a separately named formatter pinned to the global package.
+      # Markdown and the inherited YAML baseline install Prettier. Web
+      # filetypes use a PATH-resolved formatter that rejects that bundled
+      # executable. Markdown uses a separately named global formatter.
       formatters = {
-        prettier.command = lib.mkForce (mkLuaInline ''
+        project_prettier.command = mkLuaInline ''
           function(_, ctx)
             local local_bin = vim.fs.find("node_modules/.bin/prettier", {
               path = ctx.dirname,
@@ -153,7 +151,7 @@ in {
             if executable ~= "" and executable ~= bundled then return executable end
             return "prettier-not-provided-by-project"
           end
-        '');
+        '';
         markdown_prettier = {
           command = getExe pkgs.prettier;
           args = ["--stdin-filepath" "$FILENAME"];
@@ -163,13 +161,31 @@ in {
 
     diagnostics.nvim-lint.linters_by_ft = {
       lua = ["luacheck"];
-      nix = ["statix" "deadnix"];
-      sql = ["sqlfluff"];
       svelte = ["eslint_d"];
       javascript = ["eslint_d"];
       javascriptreact = ["eslint_d"];
       typescript = ["eslint_d"];
       typescriptreact = ["eslint_d"];
     };
+
+    # Full-only bundled services are also user-facing commands. Keep them on
+    # the appended wrapper PATH as well as in nvf's absolute-path integration.
+    extraPackages = with pkgs; [
+      basedpyright
+      checkmake
+      debugpyPython
+      delve
+      golangci-lint-langserver
+      gopls
+      lua-language-server
+      marksman
+      markdownlint-cli2
+      mbake
+      sqlfluff
+      superhtml
+      svelte-language-server
+      tofu-ls
+      typescript-language-server
+    ];
   };
 }

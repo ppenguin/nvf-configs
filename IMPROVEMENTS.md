@@ -10,9 +10,10 @@ they are not outstanding tasks.
 - SOPS editing no longer risks truncating the encrypted source on a failed save.
 - Profiles are composed from reusable editing, workflow, language, debugging,
   and full-extras groups.
-- The devops profile now has the explicit Nix/shell/YAML/JSON/SQL baseline.
-- The full profile bundles language servers and DAP adapters while resolving
-  project-sensitive formatters and linters through direnv/devenv.
+- The devops profile now has an explicit, PATH-exposed Nix/shell/YAML/JSON/SQL
+  baseline, with SQL formatting omitted after measuring its cost.
+- Full inherits that complete baseline, then adds full-only language, formatting,
+  diagnostics, DAP, and document capabilities.
 - Go linting uses `golangci-lint-langserver` with the project-selected Go
   toolchain and the intentional v2 `@latest` command.
 - The confirmed keymap, file-copy, autopair, DAP-repeat, document-placement,
@@ -63,48 +64,56 @@ The duplicated profile import lists were replaced by these entry points:
 
 `_common/lsp.nix` now owns only the shared LSP, Conform, nvim-lint, indentation,
 and Nix-formatter-switch framework. Devops language packages live in
-`_common/languages-devops.nix`; full language policy lives in
-`nvim-generic-full/lsp.nix`. This keeps new profile variants composable without
-making full inherit the devops tool closure.
+`_common/languages-devops.nix`; `_groups/languages-full.nix` imports that entire
+baseline before `nvim-generic-full/lsp.nix` adds full-specific capabilities.
+This makes the full language profile a literal augmentation of devops.
 
 ### Devops baseline
 
-The lean profile enables Nix, shell, YAML, JSON, and SQL with bundled LSP,
-Treesitter, formatter, and applicable diagnostics support. ShellCheck, Statix,
-Deadnix, and SQLFluff remain available through nvf's baseline integrations.
-Lua and Markdown language tooling no longer leak into this profile. SOPS and the
-familiar shared editor/UI capability set remain bundled.
+The lean profile enables Nix, shell, YAML, JSON, and SQL with bundled LSP and
+Treesitter support. Nix, shell, YAML, and JSON also retain bundled formatting and
+applicable diagnostics. Every intentional baseline executable is included in
+`vim.extraPackages`, making commands such as Alejandra, nixfmt, Statix, Deadnix,
+ShellCheck, shfmt, jsonfmt, and the language servers available through `:!`,
+`vim.system()`, and Neovim terminals.
 
-Sqruff was tested as a possible SQLFluff replacement. With the pinned nixpkgs it
+SQL keeps syntax support and SQLS but does not include SQLFluff formatting or
+linting. Removing SQLFluff reduced the current devops runtime closure from
+919.0 MiB to 703.8 MiB. Lua and Markdown language tooling remain outside this
+profile. SOPS and the familiar shared editor/UI capability set remain bundled.
+
+Sqruff was tested as a possible lean SQL formatter. With the pinned nixpkgs it
 introduced 427 derivations, including an uncached Rust/bootstrap chain, and the
-offline build could not obtain a required bootstrap source. That is a worse fit
-for ad hoc `nix run` use on servers, so the supported SQLFluff integration was
-retained.
+offline build could not obtain a required bootstrap source. Neither formatter
+is a good fit for ad hoc server use, so SQL formatting is a full-only
+augmentation and continues to use the supported SQLFluff integration there.
 
 ### Full language policy
 
-The full profile keeps nvf-provided language servers and parsers for its broad
-language set. Go and Python DAP adapters remain bundled: the measured variant
-without those language adapters saved only about 120 MiB from the earlier
-roughly 4.0 GiB closure and did not demonstrate equivalent nvf configuration and
-usage DX.
+The full profile inherits all devops language settings, packages, and PATH
+entries, then adds nvf-provided language servers and parsers for its broader
+language set. It adds SQLFluff formatting/diagnostics back as an always-available
+full capability. Full-only bundled services and adapters are likewise added to
+`vim.extraPackages`, so their commands are available to `:!`, `vim.system()`,
+and Neovim terminals. Go and Python DAP adapters remain bundled: the measured
+variant without those language adapters saved only about 120 MiB from the
+earlier roughly 4.0 GiB closure and did not demonstrate equivalent nvf
+configuration and usage DX.
 
 Project-sensitive tools are configured in the editor but resolved from the
 active environment:
 
-| Role | Environment-provided command |
+| Additional full role | Environment-provided command |
 | --- | --- |
-| Web/config formatting | `prettier`, preferring `node_modules/.bin/prettier` |
+| Web formatting | `prettier`, preferring `node_modules/.bin/prettier` |
 | Lua formatting/diagnostics | `stylua`, `luacheck` |
-| Nix formatting/diagnostics | `alejandra`, `statix`, `deadnix` |
-| SQL formatting/diagnostics | `sqlfluff` |
 | JS/TS/Svelte diagnostics | `eslint_d` |
 
 The shared nvim-lint runner checks command availability and skips unavailable
 project tools quietly. Markdown uses a separately named formatter pinned to the
-bundled Prettier, preventing the global Markdown exception from becoming a
-fallback for project web/config files. Bash and GNU Make keep their permitted
-bundled formatter/linter integrations.
+bundled Prettier, preventing global Prettier from becoming a fallback for web
+filetypes. Nix, shell, YAML, and JSON come from the inherited baseline; SQLFluff,
+Markdown, and GNU Make are full augmentations or exceptions.
 
 A clean-environment runtime check confirmed that Markdown's bundled formatter is
 available while the project Prettier formatter is unavailable. A disposable
@@ -158,13 +167,13 @@ placement rather than package-size claims in isolation.
 
 | Profile | Before | After | Change |
 | --- | ---: | ---: | ---: |
-| `nvim-generic-full` | about 4.0 GiB | about 3.4 GiB | about -0.6 GiB |
-| `nvim-lean-devops` | about 1.2 GiB | about 919 MiB | about -0.3 GiB |
+| `nvim-generic-full` | about 4.0 GiB | about 3.5 GiB | about -0.5 GiB |
+| `nvim-lean-devops` | about 1.2 GiB | 703.8 MiB | about -0.5 GiB |
 
-The full reduction mainly comes from externalizing project-sensitive tooling.
-The intentional Markdown browser/rendering closure remains. The devops reduction
-comes mainly from removing Markdown/.NET/Deno and Lua tooling that was outside
-its baseline.
+The full reduction mainly comes from externalizing project-sensitive tools
+outside the inherited baseline. Its intentional Markdown browser/rendering and
+full-only SQLFluff closures remain. The devops reduction comes from removing
+Markdown/.NET/Deno and Lua tooling, followed by moving SQLFluff to full.
 
 ## Automated and manual validation
 
@@ -173,7 +182,8 @@ its baseline.
 - Both x86_64-linux wrappers build successfully.
 - `checks.<system>` includes both packages and a headless startup smoke test.
 - The smoke test checks SOPS availability, full-only document mappings,
-  devops/full language separation, DAP comma scope, and the Go toolchain setting.
+  inherited baseline commands, full-only bundled commands and SQLFluff, DAP
+  comma scope, and the Go toolchain setting.
 - Headless runtime checks covered project-local versus bundled Prettier,
   Markdown formatting invocation, absence of duplicate Go linting, visual jq
   mapping form, nvim-tree space-containing paths, DAP mapping lifecycle, and

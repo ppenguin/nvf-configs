@@ -32,15 +32,15 @@ nix develop
 | Shared editing, navigation, file tree, terminal and Git UI | yes | yes |
 | SOPS editing | bundled | bundled |
 | Languages | Nix, shell, YAML, JSON, SQL | broad daily-driver set |
-| Baseline language tools | bundled for fresh-server use | LSPs and DAP adapters bundled |
-| Project-sensitive formatters and linters | bundled baseline | resolved from direnv/devenv |
+| Baseline language tools | bundled and on `PATH` | inherited from devops and on `PATH` |
+| Additional project-sensitive tools | no | resolved from direnv/devenv |
 | Markdown preview, Mermaid, images and document mappings | no | bundled/global |
 | Debugging | no | nvf DAP integrations |
 | Git interfaces | lazygit | lazygit and Neogit |
 
-The profiles are composed from modules in `nvfconfs/_groups`. Shared editing
-and workflow behavior is separate from each language group, so another output
-can reuse the same muscle memory without inheriting an unwanted tool closure.
+The profiles are composed from modules in `nvfconfs/_groups`. Full's language
+group imports the complete devops baseline and then augments it; shared editing
+and workflow behavior remains independently reusable by other variants.
 
 ## Home Manager
 
@@ -70,24 +70,32 @@ updates the daily-driver editor.
 
 ## Tool placement
 
-The lean profile bundles completion, diagnostics, linting and formatting for
-Nix, shell, YAML, JSON and SQL. SQLFluff is retained because the tested Sqruff
-alternative caused a substantially larger uncached Rust/bootstrap build for the
-remote `nix run` use case.
+The lean profile bundles completion and editing support for Nix, shell, YAML,
+JSON, and SQL. Nix, shell, YAML, and JSON include their formatter and diagnostic
+tools. SQL includes Treesitter and SQLS; SQLFluff is omitted because its Python
+closure is significant for ad hoc remote use.
 
-The full profile bundles language servers and nvf's debug adapters. Its
-project-sensitive commands use the active direnv/devenv environment:
+Every baseline language executable is also added to nvf's `extraPackages`, so
+commands such as `alejandra`, `nixfmt`, `statix`, `deadnix`, `shfmt`, `jsonfmt`,
+and the bundled language servers work through `:!`, `vim.system()`, and Neovim
+terminals. nvf appends them to the inherited `PATH`.
 
-- Prettier for web/config filetypes, with a project-local
+The full profile inherits that complete baseline, adds SQLFluff as a full-only
+formatter/linter, and bundles its additional language servers and nvf debug
+adapters. Those additional bundled commands—including `gopls`, `dlv`,
+`marksman`, `lua-language-server`, `basedpyright-langserver`, `debugpy`, and
+`tofu-ls`—are also on the appended Neovim `PATH`. Additional project-sensitive
+commands use direnv/devenv:
+
+- Prettier for web filetypes, with a project-local
   `node_modules/.bin/prettier` preferred;
 - Stylua for Lua;
-- Alejandra for Nix;
-- SQLFluff for SQL;
 - `eslint_d` for JavaScript, TypeScript and Svelte diagnostics.
 
-Missing project tools are skipped quietly outside a development environment.
-Markdown is deliberately global and uses the bundled Prettier. Bash and GNU
-Make formatting and diagnostics are also bundled exceptions.
+Missing additional project tools are skipped quietly outside a development
+environment. Markdown is deliberately global and uses bundled Prettier. The
+inherited Nix/shell/YAML/JSON baseline, full-only SQLFluff, and GNU Make support
+are also always available.
 
 Go diagnostics use the bundled `golangci-lint-langserver`, but only start in a
 direnv/devenv Go project. The server invokes:

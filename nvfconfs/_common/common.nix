@@ -11,6 +11,7 @@
 in {
   config.vim = {
     extraPackages = with pkgs; [
+      fd
       fzf
       ripgrep
     ];

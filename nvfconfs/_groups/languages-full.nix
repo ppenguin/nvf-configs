@@ -1,3 +1,6 @@
 {
-  imports = [../nvim-generic-full/lsp.nix];
+  imports = [
+    ./languages-devops.nix
+    ../nvim-generic-full/lsp.nix
+  ];
 }

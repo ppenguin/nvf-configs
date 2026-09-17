@@ -1,4 +1,8 @@
-{pkgs, ...}: let
+{
+  lib,
+  pkgs,
+  ...
+}: let
   complete = {
     enable = true;
     format.enable = true;
@@ -19,23 +23,32 @@ in {
             type = ["alejandra"];
           };
         };
-      sql =
-        complete
-        // {
-          format = {
-            enable = true;
-            type = ["sqlfluff"];
-          };
-          extraDiagnostics = {
-            enable = true;
-            types = ["sqlfluff"];
-          };
-        };
+      sql = {
+        enable = true;
+        format.enable = lib.mkDefault false;
+        lsp.enable = true;
+        treesitter.enable = true;
+      };
       yaml = complete;
     };
 
-    # FormatNixUseNixfmt is available in both profiles. Alejandra is supplied by
-    # the nvf language preset above; this adds the selectable alternative.
-    extraPackages = [pkgs.nixfmt];
+    # nvf presets normally call these through absolute store paths. They are
+    # also user-facing baseline tools, so expose them to :!, vim.system(), and
+    # terminals spawned by Neovim. mnw appends this list to the inherited PATH.
+    extraPackages = with pkgs; [
+      alejandra
+      bash-language-server
+      deadnix
+      jsonfmt
+      nil
+      nixfmt
+      prettier
+      shellcheck
+      shfmt
+      sqls
+      statix
+      vscode-langservers-extracted
+      yaml-language-server
+    ];
   };
 }

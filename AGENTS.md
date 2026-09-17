@@ -66,12 +66,13 @@ composition rather than copied configuration.
 - Share core editing behavior, navigation, and keybindings across profiles.
 - Group related capabilities into modules that profiles can include explicitly.
 - Separate language/plugin settings groups from tool-package inclusion where the
-  distinction is useful. Full and devops may share behavior without having to
-  share every executable, while standard nvf language modules remain appropriate
-  when their bundled tools fit the policy and closure budget.
-- Compose profiles from these groups, with small explicit overrides when needed.
-  Full need not inherit the complete devops output: doing so would also inherit
-  its bundled tools, contrary to full's dependency policy.
+  distinction is useful, while keeping the devops language group a complete,
+  reusable baseline.
+- Full is a strict language-capability superset of devops: its language group
+  imports the complete devops baseline, then augments it with full-only servers,
+  parsers, formatters, linters, and debuggers. Full-specific settings for a
+  baseline language may extend or deliberately override one aspect, but must not
+  accidentally discard that language's baseline capability.
 - Keep group boundaries practical; avoid abstractions that make it harder to
   determine what a profile enables or pulls into its dependency closure.
 
@@ -81,32 +82,43 @@ These policies describe the current defaults and the criteria for changing them.
 
 - The devops language baseline is Nix, shell, YAML, JSON, and SQL. Preserve
   familiar navigation and editing while keeping the dependency footprint
-  appropriate for direct `nix run` use on headless servers. Bundle the tools
-  needed for baseline completion, diagnostics, linting, and formatting so they
-  work on a fresh server without a project environment. Keep heavier development
-  tools out of this baseline and measure the closure impact when choosing
-  equivalent implementations.
+  appropriate for direct `nix run` use on headless servers. Bundle completion,
+  diagnostics, linting, and formatting tools so they work on a fresh server
+  without a project environment. SQL is the deliberate lean exception: bundle
+  Treesitter and SQLS, but keep SQLFluff formatting/linting in full because its
+  Python closure is significant. Keep other heavy development tools out of the
+  baseline and measure the closure impact when choosing implementations.
+- Add every intentionally bundled devops language executable to
+  `vim.extraPackages`. They must be available to `:!`, `vim.system()`, and
+  terminals spawned by Neovim, in addition to nvf's absolute-path integrations.
+  nvf appends these paths, preserving the inherited host/devenv path order.
 - The full profile should prepare language support through editor plugins and
   settings so entering a direnv/devenv language environment works without
-  additional Neovim configuration. Do not assume that those environments provide
-  language servers: bundling broadly useful language servers and editor services
-  in full is often desirable, especially when standard nvf modules configure
-  them reliably and their closure cost is reasonable.
+  additional Neovim configuration. It inherits the complete devops language and
+  executable baseline before adding broader language support. Do not assume that
+  project environments provide language servers: bundling broadly useful
+  servers and editor services in full is often desirable, especially when
+  standard nvf modules configure them reliably.
+- Full-only bundled user-facing executables follow the same PATH rule. Add them
+  through the module that owns the capability so full augments the inherited
+  PATH without duplicating the devops package list. Do not treat arbitrary
+  transitive runtime dependencies as user-facing tools.
 - Choose full-profile tools selectively rather than applying one rule to every
   language-related executable. Consider how broadly the tool is useful, closure
   size, whether nvf integrates it cleanly, and whether it must match the project's
   language or dependency versions.
 - As the default for full, keep nvf-provided language servers and debug adapters
   bundled. Their reliable, declarative integration is part of the editor profile.
-  Source project-sensitive formatters and linters from direnv/devenv instead,
-  because their versions can affect diagnostics or rewrite project files.
-- Full's global Markdown capability and Bash/GNU Make exceptions may bundle their
-  formatters, linters, and related tools where useful. Document other exceptions
-  when a standard nvf integration or clear usability benefit outweighs version
-  sensitivity and closure cost.
-- Project-sensitive tools must resolve from the active direnv/devenv environment.
-  Avoid bundled fallbacks when they could silently analyze or modify a project
-  with an incompatible toolchain or version.
+  Source project-sensitive formatters and linters outside the inherited baseline
+  from direnv/devenv, because their versions can affect diagnostics or rewrite
+  project files.
+- The inherited Nix/shell/YAML/JSON tools are an intentional always-available
+  full-profile baseline because projects are unlikely to pin them. SQLFluff is a
+  full-only always-available augmentation. Full's global Markdown capability and
+  GNU Make support are additional bundled exceptions.
+- Project-sensitive tools outside those documented exceptions must resolve from
+  the active direnv/devenv environment. Avoid bundled fallbacks when they could
+  silently analyze or modify a project with an incompatible toolchain or version.
 - Go linting intentionally runs
   `go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest` with the
   Go toolchain selected by the project environment. Project rules use the same
@@ -127,12 +139,11 @@ These policies describe the current defaults and the criteria for changing them.
   diagnostics; remove only its Go binding and custom golangci-lint definition
   when the auxiliary LSP replaces them.
 - Keep PATH-based integration available for environment-provided tools even when
-  other editor services are bundled. Tool selection may therefore differ by
-  language and by role: an LSP and debug adapter can be global while a linter,
-  formatter, compiler, or runtime for the same language comes from the project
-  environment.
-- Bash and GNU Make are permitted tooling exceptions where relevant. Nushell is
-  an optional experiment; keep it disabled or commented out for now.
+  other editor services are bundled. The devops baseline is appended to PATH, so
+  a host or devenv command can take precedence for manual shell use. nvf presets
+  may still use their bundled absolute paths for stable editor integration.
+- GNU Make is a permitted full-profile tooling exception. Nushell is an optional
+  experiment; keep it disabled or commented out for now.
 - General editor utilities are distinct from language development tooling. Keep
   their dependencies explicit and consider their cost for the devops profile.
 - SOPS editing is a shared capability and must work in devops on a fresh server;
@@ -246,8 +257,8 @@ them merely because their capabilities overlap.
   project-sensitive tools outside a development environment should not prevent
   ordinary editing or cause repeated intrusive errors.
 - For devops dependency changes, check the baseline without a project environment
-  and inspect the dependency impact. Full should not acquire devops-only tool
-  packages through shared imports.
+  and inspect the dependency impact. Full must inherit the updated baseline and
+  retain its augmentations.
 - For full-profile dependency changes, inspect closure impact and identify the
   largest additions. Size informs the decision but does not override intentional
   global features such as the complete Markdown workflow.
