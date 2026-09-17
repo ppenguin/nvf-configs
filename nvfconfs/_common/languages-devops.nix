@@ -14,12 +14,18 @@ in {
         complete
         // {
           extraDiagnostics.enable = true;
-          format.type = ["alejandra"];
+          format = {
+            enable = true;
+            type = ["alejandra"];
+          };
         };
       sql =
         complete
         // {
-          format.type = ["sqlfluff"];
+          format = {
+            enable = true;
+            type = ["sqlfluff"];
+          };
           extraDiagnostics = {
             enable = true;
             types = ["sqlfluff"];

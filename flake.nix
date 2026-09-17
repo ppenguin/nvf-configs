@@ -76,7 +76,7 @@
               +qa!
 
             ${self'.packages.nvim-lean-devops}/bin/nvim --headless \
-              "+lua assert(vim.fn.exists(':SopsEdit') == 2); assert(#vim.fn.maparg('<leader>mp', 'n') == 0); assert(vim.fn.executable('marksman') == 0)" \
+              "+lua local conform = require('conform'); assert(vim.fn.exists(':SopsEdit') == 2); assert(#vim.fn.maparg('<leader>mp', 'n') == 0); assert(vim.fn.executable('marksman') == 0); assert(conform.get_formatter_info('alejandra', 0).available); assert(vim.fn.executable(conform.get_formatter_info('sqlfluff', 0).command) == 1)" \
               +qa!
 
             touch "$out"
