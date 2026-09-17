@@ -1,6 +1,5 @@
 {lib, ...}: let
   inherit (lib.nvim.dag) entryAfter;
-  inherit (lib.nvim.binds) mkBinding;
 in {
   config.vim = {
     filetree.nvimTree = {

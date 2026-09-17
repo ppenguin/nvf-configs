@@ -15,7 +15,7 @@
       jump.enable = true;
       map.enable = true;
       operators.enable = true;
-      pairs.enable = true;
+      pairs.enable = false;
       splitjoin.enable = true;
       surround.enable = true;
       # tabline.enable = true;

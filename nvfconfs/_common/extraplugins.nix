@@ -1,11 +1,8 @@
 {
-  lib,
+  mkKeymapD,
   pkgs,
   ...
-}: let
-  inherit (lib.nvim.binds) mkKeymap;
-  mkKeymapD = mode: key: cmd: desc: mkKeymap mode key cmd {inherit desc;};
-in {
+}: {
   config.vim = {
     keymaps = [
       # Barbar:

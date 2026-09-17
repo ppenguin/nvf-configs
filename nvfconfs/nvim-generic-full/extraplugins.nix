@@ -2,7 +2,6 @@
   vpkgs = pkgs.vimPlugins;
 in {
   config.vim = {
-    # here we can provide custom setup
     extraPlugins =
       (builtins.listToAttrs (
         map (name: {
@@ -11,13 +10,13 @@ in {
         })
         [
           "nvim-jqx"
-          "live-server" # NOTE: dep of markdown-preview-selim, needs overlay
+          "live-server"
           "markdown-table-mode"
         ]
       ))
       // {
         "markdown-preview-selim" = {
-          package = vpkgs.markdown-preview-selim; # NOTE: needs overlay
+          package = vpkgs.markdown-preview-selim;
           setup = "require('markdown_preview').setup({ host = '0.0.0.0', port = 18421, hooks = { on_start = function(url) vim.fn.setreg('+', url); vim.fn.setreg('\"', url); vim.notify('Markdown preview (copied to clipboard): ' .. url) end } })";
         };
         nvim-dbee = {

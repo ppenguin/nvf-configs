@@ -1,32 +1,53 @@
 local vim = vim
+local dap = require("dap")
 local last_action = nil
+local comma_active = false
 
 local function make_repeatable(lhs, mode)
 	mode = mode or "n"
 	local existing = vim.fn.maparg(lhs, mode, false, true)
-	if not existing or not existing.callback then
-		return
-	end
-	local fn = existing.callback
+	if not existing or not existing.callback then return end
+
+	local action = existing.callback
 	vim.keymap.set(mode, lhs, function()
-		last_action = fn
-		fn()
+		last_action = action
+		action()
 	end, { desc = existing.desc })
 end
 
-vim.keymap.set("n", ",", function()
-	if last_action then
-		last_action()
-	end
-end)
+local function activate_comma()
+	if comma_active then return end
+	comma_active = true
+	last_action = nil
+	vim.keymap.set("n", ",", function()
+		if last_action then last_action() end
+	end, { desc = "Repeat last DAP action" })
+end
 
--- we configure the existing keybinds to repeat with ','
-make_repeatable("<leader>dc") -- continue
-make_repeatable("<leader>db") -- toggle breakpoint
-make_repeatable("<leader>dgc") -- cont to cursor
-make_repeatable("<leader>dgi") -- step into
-make_repeatable("<leader>dgo") -- step out
-make_repeatable("<leader>dgj") -- next step
-make_repeatable("<leader>dgk") -- step back
-make_repeatable("<leader>dvo") -- stack trace up
-make_repeatable("<leader>dvi") -- stack trace down
+local function deactivate_comma()
+	vim.schedule(function()
+		if dap.session() ~= nil or not comma_active then return end
+		pcall(vim.keymap.del, "n", ",")
+		comma_active = false
+		last_action = nil
+	end)
+end
+
+local listener = "nvf_repeat_key"
+dap.listeners.after.event_initialized[listener] = activate_comma
+dap.listeners.after.event_terminated[listener] = deactivate_comma
+dap.listeners.after.event_exited[listener] = deactivate_comma
+dap.listeners.after.disconnect[listener] = deactivate_comma
+
+-- Wrap nvf's existing DAP mappings so their callbacks become repeatable while
+-- a debug session is active. Deleting the temporary comma mapping restores
+-- Vim's native reverse f/t repeat outside DAP.
+make_repeatable("<leader>dc")
+make_repeatable("<leader>db")
+make_repeatable("<leader>dgc")
+make_repeatable("<leader>dgi")
+make_repeatable("<leader>dgo")
+make_repeatable("<leader>dgj")
+make_repeatable("<leader>dgk")
+make_repeatable("<leader>dvo")
+make_repeatable("<leader>dvi")

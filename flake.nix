@@ -60,6 +60,28 @@
             buildInputs = [self'.packages.default];
           };
         };
+
+        checks = {
+          inherit (self'.packages) nvim-generic-full nvim-lean-devops;
+
+          startup-smoke = pkgs.runCommand "nvf-startup-smoke" {} ''
+            export HOME="$TMPDIR/home"
+            export XDG_CACHE_HOME="$TMPDIR/cache"
+            export XDG_STATE_HOME="$TMPDIR/state"
+            export TERM=dumb
+            mkdir -p "$HOME" "$XDG_CACHE_HOME" "$XDG_STATE_HOME"
+
+            ${self'.packages.nvim-generic-full}/bin/nvim --headless \
+              "+lua local conform = require('conform'); assert(vim.fn.exists(':SopsEdit') == 2); assert(#vim.fn.maparg('<leader>mp', 'n') > 0); assert(#vim.fn.maparg(',', 'n') == 0); assert(vim.fn.maparg('<leader>js', 'x'):sub(1, 4) == ':!jq'); assert(require('lint').linters_by_ft.go == nil); assert(conform.get_formatter_info('markdown_prettier', 0).available); assert(not conform.get_formatter_info('prettier', 0).available); assert(vim.lsp.config.golangci_lint_ls.cmd_env.GOTOOLCHAIN == 'local')" \
+              +qa!
+
+            ${self'.packages.nvim-lean-devops}/bin/nvim --headless \
+              "+lua assert(vim.fn.exists(':SopsEdit') == 2); assert(#vim.fn.maparg('<leader>mp', 'n') == 0); assert(vim.fn.executable('marksman') == 0)" \
+              +qa!
+
+            touch "$out"
+          '';
+        };
       };
     };
 }

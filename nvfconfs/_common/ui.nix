@@ -59,14 +59,6 @@
       ];
     };
 
-    # NOTE: use mini-map from mini instead
-    # minimap = {
-    #   minimap-vim.enable = true;
-    #   codewindow.enable = false; # FIXME: throws error ts_utils not found (bug) => is probably enabled by other option
-    # };
-
-    # notify.nvim-notify.enable = true; # TODO: check if fidget adequately replaces this
-
     ui = {
       colorizer = {
         enable = true;

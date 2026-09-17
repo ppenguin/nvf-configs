@@ -99,12 +99,13 @@ in {
       vim.o.clipboard = "unnamedplus"
 
       local in_ssh = vim.env.SSH_TTY ~= nil or vim.env.SSH_CONNECTION ~= nil
+      local is_darwin = vim.fn.has("macunix") == 1
       local has_local_display =
-        vim.env.WAYLAND_DISPLAY ~= nil or vim.env.DISPLAY ~= nil
+        is_darwin or vim.env.WAYLAND_DISPLAY ~= nil or vim.env.DISPLAY ~= nil
 
       if (not in_ssh) and has_local_display then
         -- Local GUI session: leave vim.g.clipboard unset so Neovim auto-detects
-        -- wl-copy (Wayland) / xclip (X11) for full bidirectional clipboard.
+        -- pbcopy (Darwin), wl-copy (Wayland), or xclip (X11).
         vim.g.clipboard = nil
       elseif vim.env.TERM ~= "linux" then
         -- ssh / tmux / terminal emulator without a usable local display: OSC 52.
@@ -144,12 +145,11 @@ in {
 
     binds = {
       cheatsheet.enable = true;
-      whichKey.enable = true; # (try mini.clue -> didn't work)
+      whichKey.enable = true;
     };
 
     treesitter = {
       enable = true;
-      # textobjects.enable = true; # FIXME: doesn't work, prolly missing dep?
       context.enable = true;
     };
 

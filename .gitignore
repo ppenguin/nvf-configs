@@ -4,3 +4,6 @@ result-*
 
 # Ignore automatically generated direnv output
 .direnv
+
+# Ignore Neovim's fallback log when a headless/local server cannot start
+nvim.log

@@ -17,14 +17,6 @@
       (mkKeymapD "n" "<M-S-Up>" "<C-w>5+" "Pane 5l taller")
       (mkKeymapD "n" "<M-Down>" "<C-w>j" "go down pane")
       (mkKeymapD "n" "<M-S-Down>" "<C-w>5-" "Pane 5l shorter")
-      # (mkKeymap "n" "<C-x>" "<CMD>bd<CR>" "Close current buffer") # NOTE: superseded by barbar
-      # custom rendering (e.g. pandoc)
-      (mkKeymapD "n" "<leader>mp" "<CMD>!md2pdf %<CR>" "make pdf with pandocomatic")
-      (
-        mkKeymapD "n" "<leader>mpo" "<CMD>!md2pdf --open %<CR>"
-        "make pdf with pandocomatic and open in PDF viewer"
-      )
-      (mkKeymapD "n" "<leader>mpu" "<CMD>!md2pdf %<CR>" "make (update) pdf with pandocomatic")
       # reload config
       (mkKeymapD "n" "<leader>rc" "<CMD>source $MYVIMRC<CR>" "reload config")
       # copy active buffer path to system clipboard
@@ -45,10 +37,10 @@
       (mkKeymapD "n" "<leader>P" ''"+P'' "Paste-at from system clipboard")
 
       # json utils
-      (mkKeymapD "v" "<leader>js" "<CMD>!jq --sort-keys<CR>" "Sort json by keys")
+      (mkKeymapD "v" "<leader>js" ":!jq --sort-keys<CR>" "Sort json by keys")
       (
         mkKeymapD "v" "<leader>je"
-        ''<CMD>!jq 'reduce to_entries[] as $kv ({}; setpath($kv.key|split("."); $kv.value))'<CR>''
+        '':!jq 'reduce to_entries[] as $kv ({}; setpath($kv.key|split("."); $kv.value))'<CR>''
         "Expand json keys"
       )
     ];

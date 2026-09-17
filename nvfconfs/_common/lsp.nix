@@ -1,87 +1,66 @@
-{
-  pkgs,
-  lib,
-  ...
-}: let
-  enableLspOptsDefault = {
-    enable = true;
-    format.enable = true;
-    lsp.enable = true;
-    treesitter.enable = true;
-  };
+{lib, ...}: let
+  inherit (lib.generators) mkLuaInline;
   inherit (lib.nvim.dag) entryAfter;
 in {
   config.vim = {
     lsp = {
-      enable = true; # NOTE: !important for activating the below
+      enable = true;
       formatOnSave = true;
-      trouble = {
-        enable = true;
-      };
-      lightbulb = {
-        enable = true;
-      };
+      trouble.enable = true;
+      lightbulb.enable = true;
       lspconfig.enable = true;
       lspkind.enable = true;
     };
 
-    diagnostics = {
-      nvim-lint = {
-        enable = true;
-        linters = {
-          golangcilint = {
-            cmd = "go"; # use the current env's toolchain
-            args = [
-              "run"
-              "github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest"
-              "run"
-              "--output.json.path=stdout"
-              # "--output.text.path stderr"
-              "--show-stats=false"
-              "./..."
-            ];
-            # stdin = false;
-            # append_fname = true; # executed for filetype means focused buffer
-            append_fname = false;
-            ignore_exitcode = true; # returns error on findings, so nvim has to ignore (no process error)
-            stream = "stdout";
-          };
-        };
-        linters_by_ft = {
-          go = ["golangcilint"];
-        };
-      };
-    };
-
-    formatter.conform-nvim = {
+    diagnostics.nvim-lint = {
       enable = true;
-      # Configure prettier for markdown with custom args
+
+      # nvf's default runner assumes every configured command exists. Full uses
+      # PATH-resolved project linters, so unavailable tools must be skipped
+      # quietly outside a development environment.
+      lint_function = mkLuaInline ''
+        function(buf)
+          local ft = vim.api.nvim_get_option_value("filetype", { buf = buf })
+          local lint = require("lint")
+          local configured = lint.linters_by_ft[ft]
+          if configured == nil then return end
+
+          for _, name in ipairs(configured) do
+            local linter = lint.linters[name]
+            assert(linter, "Linter with name `" .. name .. "` not available")
+            if type(linter) == "function" then linter = linter() end
+            linter.name = linter.name or name
+
+            local cmd = type(linter.cmd) == "function" and linter.cmd() or linter.cmd
+            local executable = type(cmd) == "table" and cmd[1] or cmd
+            local available = type(executable) ~= "string"
+              or executable:find("/", 1, true) ~= nil and vim.uv.fs_stat(executable) ~= nil
+              or vim.fn.executable(executable) == 1
+
+            if available then
+              local required_files = linter.required_files
+              if required_files == nil then
+                lint.try_lint(name)
+              else
+                local cwd = linter.cwd or vim.fn.getcwd()
+                for _, filename in ipairs(required_files) do
+                  if vim.uv.fs_stat(vim.fs.joinpath(cwd, filename)) then
+                    lint.try_lint(name)
+                    break
+                  end
+                end
+              end
+            end
+          end
+        end
+      '';
     };
 
-    languages = {
-      enableFormat = true;
-      bash = enableLspOptsDefault // {extraDiagnostics.enable = true;};
-      json = enableLspOptsDefault;
-      lua = enableLspOptsDefault // {extraDiagnostics.enable = true;};
-      markdown = enableLspOptsDefault // {extraDiagnostics.enable = true;};
-      nix =
-        enableLspOptsDefault
-        // {
-          extraDiagnostics.enable = true;
-          format.type = ["alejandra"]; # note: removed nixfmt because it is always chosen by default
-        };
-      sql = enableLspOptsDefault // {extraDiagnostics.enable = true;};
-      yaml = {
-        enable = true;
-        lsp.enable = true;
-        treesitter.enable = true;
-      };
-    };
+    formatter.conform-nvim.enable = true;
 
     luaConfigRC.lsp-opts = entryAfter ["lsp"] (
       ''
-        -- "fix" lsp popup (add border)
-        local border = "single";
+        local border = "single"
         local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
         function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
           opts = opts or {}
@@ -106,15 +85,8 @@ in {
             vim.bo.expandtab = true
           end,
         })
-
       ''
       + (builtins.readFile ./lua/switch-nix-fmt-conform.lua)
     );
-
-    # needed for nixfmt switch script
-    extraPackages = with pkgs; [
-      alejandra
-      nixfmt
-    ];
   };
 }
