@@ -56,5 +56,26 @@ final: prev: {
         license = final.lib.licenses.mit;
       };
     };
+
+    silverbullet-nvim = final.vimUtils.buildVimPlugin {
+      pname = "silverbullet.nvim";
+      version = "unstable-2026-09-06";
+
+      src = final.fetchFromGitHub {
+        owner = "eyko139";
+        repo = "silverbullet.nvim";
+        rev = "7b73884d193fc5c23580a8b9d75aa235930f39da";
+        hash = "sha256-1nhvtPxXc+aJdCMU1wgaG56vC1KdSMmoJm1ZFb+Udwg=";
+      };
+
+      doCheck = false;
+      doInstallCheck = false;
+
+      meta = {
+        description = "Edit a remote SilverBullet space as a native Neovim Markdown workspace";
+        homepage = "https://github.com/eyko139/silverbullet.nvim";
+        license = final.lib.licenses.mit;
+      };
+    };
   });
 }
